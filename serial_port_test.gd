@@ -36,7 +36,7 @@ func _on_error(where, what):
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	serial.got_error.connect(_on_error)
-	var ports_info := SerialPort.list_ports()
+	var ports_info := StreamPeerSerial.list_ports()
 	for info in ports_info:
 		%SerialList.add_item(info)
 	if ports_info.size():
