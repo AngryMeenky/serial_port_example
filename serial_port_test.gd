@@ -1,6 +1,6 @@
 extends Control
 
-var serial := SerialPort.new()
+var serial := StreamPeerSerial.new()
 var port := ""
 var baudrate := 9600
 
@@ -28,6 +28,7 @@ func update_serial():
 	baudrate = %BaudRate.get_item_text(%BaudRate.selected).to_int()
 	serial.baudrate = baudrate
 
+
 func _on_error(where, what):
 	print_debug("Got error when %s: %s" % [where, what])
 
@@ -40,17 +41,24 @@ func _ready():
 		%SerialList.add_item(info)
 	if ports_info.size():
 		%SerialList.select(0)
-		
+
+	%BaudRate.add_item("1200")
+	%BaudRate.add_item("2400")
 	%BaudRate.add_item("4800")
 	%BaudRate.add_item("9600")
+	%BaudRate.add_item("14400")
+	%BaudRate.add_item("28800")
+	%BaudRate.add_item("33600")
+	%BaudRate.add_item("57600")
 	%BaudRate.add_item("115200")
-	%BaudRate.select(1)
-	
-	
+	%BaudRate.add_item("230400")
+	%BaudRate.add_item("460800")
+	%BaudRate.add_item("921600")
+	%BaudRate.select(3)
+
 	update_serial()
 	serial.data_received.connect(_on_data_received)
 	serial.start_monitoring(20000)
-	pass # Replace with function body.
 
 
 func _exit_tree():
@@ -58,12 +66,11 @@ func _exit_tree():
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+#func _process(delta):
 #	if serial.available() > 0:
 #		var rec := serial.read_raw(serial.available())
 #		_on_data_received(rec)
 #		pass
-	pass
 
 
 func _on_data_received(data: PackedByteArray):
@@ -72,7 +79,7 @@ func _on_data_received(data: PackedByteArray):
 	%Content.scroll_vertical = %Content.get_line_count()
 	if %Content.get_line_count() > 50:
 		%Content.text = ""
-	
+
 	print("Received[%d]: %s" % [data.size(), data.get_string_from_ascii()])
 	if serial.is_open():
 		serial.write_raw(data)
@@ -108,7 +115,5 @@ func _on_open_close_toggled(button_pressed):
 			%OpenClose.text = "Open"
 
 
-
 func _on_baud_rate_item_selected(index):
 	baudrate = %BaudRate.get_item_text(index).to_int()
-	pass # Replace with function body.
